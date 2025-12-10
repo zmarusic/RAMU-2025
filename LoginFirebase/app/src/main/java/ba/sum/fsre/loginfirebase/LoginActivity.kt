@@ -1,13 +1,11 @@
-package ba.sum.fsre.loginbasic
+package ba.sum.fsre.loginfirebase
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,63 +14,52 @@ import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
-    // Hardkodirani ispravni korisnik
-    private val validUsername = "student"
-    private val validPassword = "lozinka123"
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        val editUsername = findViewById<EditText>(R.id.edit_username)
+        auth = FirebaseAuth.getInstance()
+        val session = SessionManager(this)
+
+        val editEmail = findViewById<EditText>(R.id.edit_email)
         val editPassword = findViewById<EditText>(R.id.edit_password)
-        val checkRememberMe = findViewById<CheckBox>(R.id.check_remember_me)
         val buttonLogin = findViewById<Button>(R.id.button_login)
         val textError = findViewById<TextView>(R.id.text_error)
 
-        // SharedPreferences
-        val sharedPref = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
-
-        // Provjeri je li korisnik već prijavljen (Zapamti me)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
-        val savedUsername = sharedPref.getString("username", null)
-
-        if (isLoggedIn && savedUsername != null) {
-            // Ako je već prijavljen, odmah na WelcomeActivity
-            goToWelcomeScreen(savedUsername)
+        if (session.isLoggedIn()) {
+            goToWelcomeScreen()
             finish()
             return
         }
 
         buttonLogin.setOnClickListener {
-            val username = editUsername.text.toString().trim()
+            val username = editEmail.text.toString().trim()
             val password = editPassword.text.toString().trim()
 
             // Prazna polja
             if (username.isEmpty() || password.isEmpty()) {
                 textError.text = "Molimo unesite korisničko ime i lozinku."
-            } else if (username == validUsername && password == validPassword) {
+            } else  {
                 textError.text = ""
-                if (checkRememberMe.isChecked) {
-                    val editor = sharedPref.edit()
-                    editor.putBoolean("isLoggedIn", true)
-                    editor.putString("username", username)
-                    editor.apply()
-                }
-                goToWelcomeScreen(username)
-            } else {
-                textError.text = "Pogrešno korisničko ime ili lozinka."
+                auth.signInWithEmailAndPassword(username, password)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val user = auth.currentUser
+                            session.setLoggedIn(true)
+
+                            goToWelcomeScreen()
+                            // ovdje ide prelazak na MainActivity itd.
+                        } else {
+                            textError.text = "Pogrešno korisničko ime ili lozinka."
+                        }
+                    }
+
             }
 
         }
-
-
-
-
-
-
-
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -82,9 +69,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToWelcomeScreen(username: String) {
+    private fun goToWelcomeScreen() {
         val intent = Intent(this, WelcomeActivity::class.java)
-        intent.putExtra("username", username)
         startActivity(intent)
     }
 }

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "ba.sum.fsre.loginbasic"
+    namespace = "ba.sum.fsre.loginfirebase"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "ba.sum.fsre.loginbasic"
+        applicationId = "ba.sum.fsre.loginfirebase"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
