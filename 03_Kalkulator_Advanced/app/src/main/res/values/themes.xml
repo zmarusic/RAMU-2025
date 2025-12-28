@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        <style name="Theme._03_Kalkulator_Advanced" parent="android:Theme.Material.Light.NoActionBar" />
+     -->
+        <style name="Theme._03_Kalkulator_Advanced" parent="Theme.AppCompat.DayNight.NoActionBar">
+            <!-- boje itd. -->
+    </style>
+</resources>

@@ -1,0 +1,60 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# === ANDROID / GRADLE BUILD FILES ===
+.gradle/
+build/
+**/build/
+*/captures/
+
+# Local configuration (SDK paths, etc.)
+local.properties
+
+# Log files
+*.log
+
+# === ANDROID STUDIO / INTELLIJ IDEA ===
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Gradle wrapper logs
+gradle-app.setting
+!gradle-wrapper.jar
+
+# === FIREBASE ===
+# Do NOT commit real Firebase config
+**/google-services.json
+
+# If you ever use iOS in same repo:
+# GoogleService-Info.plist
+
+# === OS-SPECIFIC STUFF ===
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# === MISC ===
+# JetBrains cache
+out/
+
+# Keystore files (if inside project – usually better outside)
+*.jks
+*.keystore
