@@ -4,31 +4,30 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.text.DecimalFormat
 
 
 class MainActivity : AppCompatActivity() {
 
     var number : String? = null
-
     var firstNumber : Double = 0.0
     var lastNumber : Double = 0.0
-
     var status : String? = null
     var operator : Boolean = false
-
     val myFormatter = DecimalFormat("######.######")
-
     var history : String = ""
     var currentResult : String = ""
-
     var dotControl : Boolean = true
     var buttonEqualsControl : Boolean = false
 
@@ -55,11 +54,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPlus: Button
     private lateinit var btnEqual: Button
     private lateinit var btnDot: Button
+    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //mainBinding = ActivityMainBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.appBarLayout)) { v, insets ->
+            val topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            //v.setPadding(0, topInset, 0, 0)
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         textViewResult = findViewById(R.id.textViewResult)
         textViewHistory = findViewById(R.id.textViewHistory)
@@ -84,21 +92,21 @@ class MainActivity : AppCompatActivity() {
         btnEqual = findViewById(R.id.btnEqual)
         btnDot = findViewById(R.id.btnDot)
 
-        //val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
+        toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.settings_menu)
+
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.settings_item -> {
+                    startActivity(Intent(this, ChangeThemeActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
 
         // 2) init
-        textViewResult.text = "0"
-
-
-        //super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
-        //setContentView(R.layout.activity_main)
-        //ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-        //    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-        //    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-        //    insets
-        //}
-
         textViewResult.text = "0"
 
         btnZero.setOnClickListener {
@@ -297,7 +305,6 @@ class MainActivity : AppCompatActivity() {
 
             dotControl = false
         }
-
     }
 
     fun onButtonACClicked(){
@@ -378,20 +385,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.settings_item -> {
+                startActivity(Intent(this, ChangeThemeActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
 
         sharedPreferences = this.getSharedPreferences("Dark Theme", Context.MODE_PRIVATE)
         val isDarkMode = sharedPreferences.getBoolean("switch",false)
-        /*
+
         if (isDarkMode){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }else{
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
-
-         */
-
     }
 
     override fun onPause() {
